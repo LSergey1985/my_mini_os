@@ -33,6 +33,27 @@ struct idt_ptr idtp;
 
 extern void load_idt();
 
+// ... предыдущий код kernel.c ...
+
+// Объявить обработчики прерываний
+extern void irq0();
+extern void irq1();
+
+void init_idt() {
+    // Настройка обработчика таймера (IRQ0)
+    idt_set_gate(32, (uint32_t)irq0, 0x08, 0x8E);
+
+    // Настройка обработчика клавиатуры (IRQ1)
+    idt_set_gate(33, (uint32_t)irq1, 0x08, 0x8E);
+
+    // Загрузка IDT
+    idtp.limit = (sizeof(struct idt_entry) * IDT_SIZE) - 1;
+    idtp.base = (uint32_t)&idt;
+    load_idt(&idtp);  // Передаём указатель на структуру
+}
+
+// ... остальной код ...
+
 void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
     idt[num].base_low = base & 0xFFFF;
     idt[num].base_high = (base >> 16) & 0xFFFF;
