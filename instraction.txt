@@ -4,6 +4,10 @@ nasm -f bin boot.asm -o boot.bin
 5. Компиляция ядра
 gcc -m32 -ffreestanding -nostdlib -c kernel.c -o kernel.o
 
+nasm -f elf32 interrupts.asm -o interrupts.o
+gcc -m32 -ffreestanding -c kernel.c -o kernel.o
+ld -m elf_i386 -T linker.ld -o kernel.bin kernel.o interrupts.o
+
 6. Линковка ядра
 ld -m elf_i386 -T linker.ld -o kernel.bin kernel.o
 
