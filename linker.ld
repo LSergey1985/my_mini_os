@@ -1,10 +1,7 @@
-OUTPUT_FORMAT("binary")
-ENTRY(_start)
-
+ENTRY(kernel_main)
 SECTIONS {
-    . = 0x1000;
+    . = 0x10000;       /* Адрес загрузки ядра */
     .text : { *(.text) }
     .data : { *(.data) }
-    .rodata : { *(.rodata) }
-    .bss : { *(.bss) }
+    .bss  : { *(.bss)  }
 }
