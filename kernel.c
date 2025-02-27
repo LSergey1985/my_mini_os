@@ -33,6 +33,20 @@ struct idt_ptr idtp;
 
 extern void load_idt();
 
+void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
+    idt[num].base_low = base & 0xFFFF;
+    idt[num].base_high = (base >> 16) & 0xFFFF;
+    idt[num].sel = sel;
+    idt[num].flags = flags | 0x60;
+    idt[num].zero = 0;
+}
+
+void init_idt() {
+    idtp.limit = (sizeof(struct idt_entry) * IDT_SIZE) - 1;
+    idtp.base = (uint32_t)&idt;
+    load_idt();
+}
+
 // ... предыдущий код kernel.c ...
 
 // Объявить обработчики прерываний
@@ -53,20 +67,6 @@ void init_idt() {
 }
 
 // ... остальной код ...
-
-void idt_set_gate(uint8_t num, uint32_t base, uint16_t sel, uint8_t flags) {
-    idt[num].base_low = base & 0xFFFF;
-    idt[num].base_high = (base >> 16) & 0xFFFF;
-    idt[num].sel = sel;
-    idt[num].flags = flags | 0x60;
-    idt[num].zero = 0;
-}
-
-void init_idt() {
-    idtp.limit = (sizeof(struct idt_entry) * IDT_SIZE) - 1;
-    idtp.base = (uint32_t)&idt;
-    load_idt();
-}
 
 // Таймер и многозадачность
 #define MAX_TASKS 4
